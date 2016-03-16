@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="818546068675-udlcvu9popknbk63ag1f6e8qq4aabgft.apps.googleusercontent.com">
+    <title>Title</title>
+</head>
+<body>
+    <div id="my-signin2"></div>
+    <script>
+        function handleClientLoad() {
+            gapi.client.setApiKey("AIzaSyABMg0bTHdozCueL1mVPooI6ffuuN5NgcU");
+        }
+        function onSuccess(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            console.log(profile.getId());
+            console.log(profile.getName());
+            console.log(profile.getImageUrl());
+            console.log(profile.getEmail());
+
+            gapi.client.load('plus', 'v1').then(function() {
+                // Step 5: Assemble the API request
+                var request = gapi.client.plus.people.get({
+                    'userId':'me'
+                });
+                request.execute(function (resp) {
+                    console.log('ID: ' + resp.id);
+                    console.log('Display Name: ' + resp.displayName);
+                    console.log('Image URL: ' + resp.image.url);
+                    console.log('Profile URL: ' + resp.url);
+                });
+                var request2 = gapi.client.plus.people.list({
+                    'userId' : 'me',
+                    'collection' : 'visible'
+                });
+
+                request2.execute(function(resp) {
+                    var numItems = resp.items.length;
+                    for (var i = 0; i < numItems; i++) {
+                        console.log(resp.items[i].displayName);
+                    }
+                });
+            })
+        }
+        function onFailure(error) {
+            console.log(error);
+        }
+        function renderButton() {
+            gapi.signin2.render('my-signin2', {
+                'scope': 'profile email https://www.googleapis.com/auth/plus.login',
+                'width': 240,
+                'height': 50,
+                'longtitle': true,
+                'theme': 'dark',
+                'onsuccess': onSuccess,
+                'onfailure': onFailure
+            });
+        }
+    </script>
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+    <script src="https://apis.google.com/js/client.js"></script>
+</body>
+</html>
